@@ -1,0 +1,3 @@
+llama-stack-client>=0.1.5
+python-dotenv
+termcolor

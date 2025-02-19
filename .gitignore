@@ -1,0 +1,8 @@
+# This gives an MD file that you can keep in your repo to keep track of your notes that does not get checked in
+NOTEPAD.md
+TESTING_NOTES.md
+
+client-apps/.env
+
+**/local-**
+local-**

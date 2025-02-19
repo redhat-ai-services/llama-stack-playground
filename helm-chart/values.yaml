@@ -1,0 +1,133 @@
+yamlConfig: "/config/run.yaml"
+
+vllm:
+  url: "http://vllm-server"
+  inferenceModel: "llama2-7b-chat"
+  # This is the API key for the VLLM server. It can be set in two ways through a secret:
+  # TODO: Implement this
+  # secret:
+  #   name: vllm-secret
+  #   key: vll
+  # or directly with an api key (should be avoided in production)
+  # apiKey: "xxxxxxxxxxxx"
+
+telemetry:
+  enabled: false
+  serviceName: "otel-collector.openshift-opentelemetry-operator.svc.cluster.local:4318"
+  
+brave:
+  enabled: false
+  api_key: "xxxxxxxxx"
+
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: docker.io/llamastack/distribution-remote-vllm
+  tag: latest
+  # This sets the pull policy for images.
+  pullPolicy: Always
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 5001
+
+route:
+  # -- Enable creation of the OpenShift Route object
+  enabled: true
+  # Allow OCP to determine the host if left blank
+  # -- The hostname for the route
+  # @default -- Set by OpenShift
+  host: ""
+  # -- The path for the OpenShift route
+  path: ""
+  tls:
+    # -- Enable secure route settings
+    enabled: true
+    # -- Secure route termination policy
+    termination: edge
+    # -- Insecure route termination policy
+    insecureEdgeTerminationPolicy: Redirect
+  # -- Additional custom annotations for the route
+  annotations: {}
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 500Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /v1/health
+    port: 5001
+readinessProbe:
+  httpGet:
+    path: /v1/health
+    port: 5001
+startupProbe:
+  httpGet:
+    path: /v1/health
+    port: 5001
+  initialDelaySeconds: 40
+  periodSeconds: 10
+  failureThreshold: 30
+
+playground:
+  enabled: true
+  backend:
+    url: "https://my-llama-stack.openshiftapps.com"
+  replicaCount: 1
+  image:
+    repository: quay.io/jland/llama-stack-playground
+    tag: latest
+    # This sets the pull policy for images.
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 8501
+
+  route:
+    enabled: true
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+    annotations: {}
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 500Mi
+
+  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8501
+    periodSeconds: 60 # Making this 60 seconds cause it logs every time you hit the /health endpoint
+    failureThreshold: 2
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8501
+    periodSeconds: 60
+    failureThreshold: 2
+  startupProbe:
+    httpGet:
+      path: /
+      port: 8501
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    failureThreshold: 16
