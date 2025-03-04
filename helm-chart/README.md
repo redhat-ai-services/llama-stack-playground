@@ -6,6 +6,29 @@ The chart provides a convenient way to deploy and manage the Llama Stack on Kube
 
 Optionally, the chart also supports the installation of the llama-stack-playground, which provides a web-based interface for interacting with the Llama Stack.
 
+## Quick Start
+
+Create a `local-values.yaml` file with the following:
+
+```yaml
+vllm:
+  url: "https://<MY_VLLM_INSTANCE>:443/v1"
+  inferenceModel: "meta-llama/Llama-3.1-8B-Instruct"
+  apiKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# If you want to try to use brave for the Web Calling Tool
+# Note: Still having issues getting this to work
+brave:
+  enabled: true
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+Login to Openshift through the CLI and run:
+
+```sh
+helm upgrade -i ollama-stack . -f local-values.yaml
+```
+
 ## Values
 
 | Key | Type | Default | Description |
