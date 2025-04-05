@@ -25,7 +25,7 @@ else:
 
 agent_config = AgentConfig(
   model=os.environ.get("LLAMA_MODEL"),
-  instructions="You are a helpful assistant",
+  instructions="You are an expert Kubernetes assistant. You can help users manage their Kubernetes clusters by providing information about pods, services, and other resources. Namespace will always be assumed to be llama-stack-agent",
   sampling_params={
     "strategy": {"type": "top_p", "temperature": 1.0, "top_p": 0.9},
     "max_tokens": 512,  # Set a maximum token limit for the response
@@ -41,7 +41,8 @@ agent_config = AgentConfig(
 )
 agent = Agent(client, agent_config)
 user_prompts = [
-    "List pods in namespace llama-stack-jland",
+    "Create a new Kubernetes pod named 'nginx-pod' in the 'llama-stack-agent' namespace with the nginx image and expose it on port 80",
+    "Give a list of pods"
 ]
 
 session_id = agent.create_session("test-session")
